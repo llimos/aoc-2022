@@ -1,7 +1,7 @@
 from aocd import data, submit
 
 
-def total(s):
+def total(s: str) -> int:
     return sum([int(x) for x in s.split('\n')])
 
 
