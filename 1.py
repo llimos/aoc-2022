@@ -1,7 +1,10 @@
 from aocd import data, submit
+
+
 def total(s):
     return sum([int(x) for x in s.split('\n')])
 
-elves = [total(x) for x in data.split('\n\n')]
-print(elves)
-submit(max(elves))
+
+elves = sorted([total(x) for x in data.split('\n\n')], reverse=True)
+print(elves[0:3])
+submit(sum(elves[0:3]))
