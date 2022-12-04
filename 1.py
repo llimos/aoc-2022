@@ -6,5 +6,6 @@ def total(s: str) -> int:
 
 
 elves = sorted([total(x) for x in data.split('\n\n')], reverse=True)
-print(elves[0:3])
-submit(sum(elves[0:3]))
+print(elves[0])
+print(sum(elves[0:3]))
+# submit(sum(elves[0:3]))
