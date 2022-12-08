@@ -51,58 +51,37 @@ matrix = [[1 for x in y] for y in lines]
 # Iterate in each direction. The decreasing streak is the score
 # Horizontal
 for (y, line) in enumerate(lines):
-    peaks = []
+    last = [0] * 10
     x = 0
     while x < len(line):
-        if x == 0:
-            matrix[y][x] = 0
-            peaks.append([x, line[x]])
-        elif line[x] > line[x-1]:  # If it's <= do nothing (*1)
-            last_bigger_peak = next((i for (i, h) in peaks if h >= line[x]), 0)
-            matrix[y][x] *= x - last_bigger_peak
-            peaks.insert(0, [x, line[x]])
+        matrix[y][x] *= x - max(last[line[x]:], default=0)
+        last[line[x]] = x
         x += 1
 
-    peaks = []
+    last = [len(line)-1] * 10
     x = len(line) - 1
     while x >= 0:
-        if x == len(line) - 1:
-            matrix[y][x] = 0
-            peaks.append([x, line[x]])
-        elif line[x] > line[x+1]:
-            last_bigger_peak = next((i for (i, h) in peaks if h >= line[x]), len(line) - 1)
-            matrix[y][x] *= last_bigger_peak - x
-            peaks.insert(0, [x, line[x]])
+        matrix[y][x] *= min(last[line[x]:], default=len(line)-1) - x
+        last[line[x]] = x
         x -= 1
 
 # Vertical
 x = 0
 while x < len(lines[0]):
-    peaks = []
+    last = [0] * 10
     y = 0
     while y < len(lines):
-        if y == 0:
-            matrix[y][x] = 0
-            peaks.append([y, lines[y][x]])
-        elif lines[y][x] > lines[y-1][x]:
-            last_bigger_peak = next((i for (i, h) in peaks if h >= lines[y][x]), 0)
-            matrix[y][x] *= y - last_bigger_peak
-            peaks.insert(0, [y, lines[y][x]])
+        matrix[y][x] *= y - max(last[lines[y][x]:], default=0)
+        last[lines[y][x]] = y
         y += 1
 
-    peaks = []
+    last = [len(lines)-1] * 10
     y = len(lines) - 1
-    while y > 0:
-        if y == len(lines) - 1:
-            matrix[y][x] = 0
-            peaks.append([y, lines[y][x]])
-        elif lines[y][x] > lines[y+1][x]:
-            last_bigger_peak = next((i for (i, h) in peaks if h >= lines[y][x]), len(lines) - 1)
-            matrix[y][x] *= last_bigger_peak - y
-            peaks.insert(0, [y, lines[y][x]])
+    while y >= 0:
+        matrix[y][x] *= min(last[lines[y][x]:], default=len(lines)-1)
+        last[lines[y][x]] = y
         y -= 1
-
     x += 1
 
-print('\n'.join('\t'.join(str(n) for n in y) for y in matrix))
+# print('\n'.join('\t'.join(str(n) for n in y) for y in matrix))
 print(max(max(y) for y in matrix))
