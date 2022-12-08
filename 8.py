@@ -78,7 +78,7 @@ while x < len(lines[0]):
     last = [len(lines)-1] * 10
     y = len(lines) - 1
     while y >= 0:
-        matrix[y][x] *= min(last[lines[y][x]:], default=len(lines)-1)
+        matrix[y][x] *= min(last[lines[y][x]:], default=len(lines)-1) - y
         last[lines[y][x]] = y
         y -= 1
     x += 1
