@@ -147,20 +147,27 @@ from aocd import lines, submit
 # noop
 # noop""".splitlines()
 
-matrix = ([None] * 40) * 6
+matrix = []
+for i in range(6):
+    matrix.append([None] * 40)
 cycle = 0
 X = 1
 strength = 0
+def draw():
+    global cycle, X, matrix
+    if cycle >= 240:
+        return
+    matrix[int(cycle/40)][cycle % 40] = '#' if X-1 <= cycle % 40 <= X+1 else '.'
+
 for line in lines:
+    draw()
     cycle += 1
-    if cycle % 40 == 20:
-        strength += cycle * X
     op = line[0:4]
     if op == 'addx':
+        draw()
         cycle += 1
-        if cycle % 40 == 20:
-            strength += cycle * X
         X += int(line[5:])
-    if cycle > 220:
+    if cycle >= 40*6:
         break
-submit(strength)
+print(matrix)
+print('\n'.join([''.join(x) for x in matrix]))
