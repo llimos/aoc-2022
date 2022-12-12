@@ -1,82 +1,56 @@
-from typing import Callable
+from typing import Union
 from aocd import data, submit
 
 
-# data = """Monkey 0:
-#   Starting items: 79, 98
-#   Operation: new = old * 19
-#   Test: divisible by 23
-#     If true: throw to monkey 2
-#     If false: throw to monkey 3
-#
-# Monkey 1:
-#   Starting items: 54, 65, 75, 74
-#   Operation: new = old + 6
-#   Test: divisible by 19
-#     If true: throw to monkey 2
-#     If false: throw to monkey 0
-#
-# Monkey 2:
-#   Starting items: 79, 60, 97
-#   Operation: new = old * old
-#   Test: divisible by 13
-#     If true: throw to monkey 1
-#     If false: throw to monkey 3
-#
-# Monkey 3:
-#   Starting items: 74
-#   Operation: new = old + 3
-#   Test: divisible by 17
-#     If true: throw to monkey 0
-#     If false: throw to monkey 1"""
-
-divisors = (2,3,5,7,11,13,17,19)
-
 class Monkey:
+    items: list[Union[int, dict[int, int]]]
+
     def __init__(self, monkeys: list, monkeydata: str):
         self.monkeys = monkeys
         monkeydata = monkeydata.splitlines()[1:]
-        self.items = [{z: int(x) % z for z in divisors} for x in monkeydata.pop(0).split(': ')[1].split(', ')]
+        self.items = [int(x) for x in monkeydata.pop(0).split(': ')[1].split(', ')]
         op_parts = monkeydata.pop(0).split(' ')[-2:]
         if op_parts[0] == '*':
             if op_parts[1] == 'old':
                 self.op = lambda x: x * x
             else:
-                self.op = lambda x, m=int(op_parts[1]): x * m
+                self.op = lambda x: x * int(op_parts[1])
         elif op_parts[0] == '+':
-            self.op = lambda x, m=int(op_parts[1]): x + m
-        test = int(monkeydata.pop(0).split(' ')[-1])
-        if_true = int(monkeydata.pop(0).split(' ')[-1])
-        if_false = int(monkeydata.pop(0).split(' ')[-1])
-        self.test = lambda x: if_true if x[test] == 0 else if_false
+            self.op = lambda x: x + int(op_parts[1])
+        self.divisor = int(monkeydata.pop(0).split(' ')[-1])
+        self.if_true = int(monkeydata.pop(0).split(' ')[-1])
+        self.if_false = int(monkeydata.pop(0).split(' ')[-1])
         self.inspections = 0
 
-    def receive(self, item: int):
+    def receive(self, item: dict[int, int]):
         self.items.append(item)
 
-    def throw(self, item: int, to: int):
+    def throw(self, item: dict[int, int], to: int):
         self.monkeys[to].receive(item)
+
+    def test(self, item: dict[int, int]):
+        return self.if_true if item[self.divisor] == 0 else self.if_false
+
+    def do_item(self, item: dict[int, int]):
+        self.inspections += 1
+        item = {n: self.op(x) % n for (n, x) in item.items()}
+        self.throw(item, self.test(item))
 
     def turn(self):
         while len(self.items) > 0:
-            item = self.items.pop(0)
-            self.do_item(item)
-
-    def do_item(self, item):
-        item = {n: self.op(x) % n for (n, x) in item.items()}
-        self.inspections += 1
-        self.throw(item, self.test(item))
+            self.do_item(self.items.pop(0))
 
 
 monkeys = []
 monkeys.extend([Monkey(monkeys, x) for x in data.split('\n\n')])
+divisors = [m.divisor for m in monkeys]
+for m in monkeys:
+    m.items = [{z: x % z for z in divisors} for x in m.items if isinstance(x, int)]
 
 for i in range(10000):
-    # print("Round", i)
-    for (j, monkey) in enumerate(monkeys):
+    for monkey in monkeys:
         monkey.turn()
-        # print("Monkey", j, [(i, x.items) for (i, x) in enumerate(monkeys)])
-    # print("\n")
-print([x.inspections for x in monkeys])
+
 inspections = sorted((x.inspections for x in monkeys), reverse=True)[0:2]
-submit(inspections[0]*inspections[1])
+
+submit(inspections[0] * inspections[1])
