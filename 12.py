@@ -28,9 +28,12 @@ def get_candidates(coord):
 
 # BFS
 # Find start point
+candidates = set()
 starty = 0
 startx = 0
-while lines[starty][startx] != 'S':
+while starty < len(lines) and startx < len(lines[0]):
+    if lines[starty][startx] in ['S', 'a']:
+        candidates.add((starty, startx))
     if startx < len(lines[0]) - 2:
         startx += 1
     else:
@@ -38,9 +41,7 @@ while lines[starty][startx] != 'S':
         starty += 1
 
 # BFS
-candidates = {(starty, startx)}
-visited = {(starty, startx)}
-print(candidates)
+visited = set(candidates)
 steps = 0
 i = 0
 while len(candidates):
