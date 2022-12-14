@@ -14,12 +14,9 @@ for line in lines:
 
 n = 0
 while (500, 0) not in blocked:
-    sand = (500, 0)
     n += 1
-    while sand not in blocked:
-        try:
-            sand = next((sand[0] + x, sand[1] + 1)
-                        for x in [0, -1, 1] if sand[1] + 1 < floor and (sand[0] + x, sand[1] + 1) not in blocked)
-        except StopIteration:
-            blocked.add(sand)
+    (x, y) = (500, 0)
+    while y + 1 < floor and not blocked.issuperset({(x, y+1), (x-1, y+1), (x+1, y+1)}):
+        (x, y) = next(filter(lambda z: z not in blocked, ((x, y+1), (x-1, y+1), (x+1, y+1))))
+    blocked.add((x, y))
 submit(n)
