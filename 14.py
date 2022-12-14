@@ -1,42 +1,28 @@
 from aocd import lines, submit
 
-# lines = """498,4 -> 498,6 -> 496,6
-# 503,4 -> 502,4 -> 502,9 -> 494,9""".splitlines()
-
 lines = [[[int(z) for z in y.split(',')] for y in x.split(' -> ')] for x in lines]
 blocked: set[tuple[int, int]] = set()
-abyss = 0
+floor = 0
 for line in lines:
     prev = line[0]
     for coord in line:
-        (startx, starty) = prev
-        (endx, endy) = coord
-        for x in range(min(startx, endx), max(startx, endx) + 1):
-            for y in range(min(starty, endy), max(starty, endy) + 1):
-                blocked.add((x, y))
-        abyss = max(abyss, endy + 1)
+        blocked.update({(x, y)
+                        for x in range(min(prev[0], coord[0]), max(prev[0], coord[0]) + 1)
+                        for y in range(min(prev[1], coord[1]), max(prev[1], coord[1]) + 1)})
+        floor = max(floor, coord[1] + 2)
         prev = coord
-in_abyss = False
+
 n = 0
-while not in_abyss:
+while (500, 0) not in blocked:
     sand = (500, 0)
-    while not in_abyss:
-        if (sand[0], sand[1]+1) not in blocked:
-            sand = (sand[0], sand[1]+1)
-        elif (sand[0]-1, sand[1]+1) not in blocked:
-            sand = (sand[0]-1, sand[1]+1)
-        elif (sand[0]+1, sand[1]+1) not in blocked:
-            sand = (sand[0]+1, sand[1]+1)
-        else:
+    n += 1
+    while sand not in blocked:
+        try:
+            sand = next((sand[0]+x, sand[1]+1)
+                        for x in [0, -1, 1]
+                        if (sand[0]+x, sand[1]+1) not in blocked and sand[1] + 1 < floor)
+        except StopIteration:
             blocked.add(sand)
-            # print("Rests at", sand)
-            break
-        # print(sand)
-        if sand[1] > abyss:
-            # print("In abyss")
-            in_abyss = True
-    if not in_abyss:
-        n += 1
 submit(n)
 
 
