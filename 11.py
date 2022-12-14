@@ -1,3 +1,4 @@
+from operator import mul
 from typing import Union
 from aocd import data, submit
 
@@ -10,13 +11,8 @@ class Monkey:
         monkeydata = monkeydata.splitlines()[1:]
         self.items = [int(x) for x in monkeydata.pop(0).split(': ')[1].split(', ')]
         op_parts = monkeydata.pop(0).split(' ')[-2:]
-        if op_parts[0] == '*':
-            if op_parts[1] == 'old':
-                self.op = lambda x: x * x
-            else:
-                self.op = lambda x: x * int(op_parts[1])
-        elif op_parts[0] == '+':
-            self.op = lambda x: x + int(op_parts[1])
+        self.op = (lambda x: x + int(op_parts[1])) if op_parts[0] == '+' else \
+            (lambda y: y * y) if op_parts[1] == 'old' else (lambda z: z * int(op_parts[1]))
         self.divisor = int(monkeydata.pop(0).split(' ')[-1])
         self.if_true = int(monkeydata.pop(0).split(' ')[-1])
         self.if_false = int(monkeydata.pop(0).split(' ')[-1])
@@ -51,6 +47,4 @@ for i in range(10000):
     for monkey in monkeys:
         monkey.turn()
 
-inspections = sorted((x.inspections for x in monkeys), reverse=True)[0:2]
-
-submit(inspections[0] * inspections[1])
+submit(mul(* sorted((x.inspections for x in monkeys), reverse=True)[0:2]))

@@ -20,7 +20,7 @@ for (i, line) in enumerate(lines):
     if i % 3 == 0:
         contents = set(line)
     else:
-        contents = contents.intersection(line)
+        contents.intersection_update(line)
         if i % 3 == 2:
             priority += get_priority(contents.pop())
 

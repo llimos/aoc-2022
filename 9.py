@@ -1,18 +1,9 @@
 from aocd import lines, submit
 
-# lines = """R 4
-# U 4
-# L 3
-# D 1
-# R 4
-# D 1
-# L 5
-# R 2""".splitlines()
-
 lines = [(x[0], int(x[2:])) for x in lines]
 
-h = (0,0)
-t = (0,0)
+h = (0, 0)
+t = (0, 0)
 
 visited = set()
 visited.add(t)

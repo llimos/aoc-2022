@@ -7,7 +7,7 @@ def level(letter):
 
 end = next((y, x) for (y, line) in enumerate(lines) for (x, l) in enumerate(line) if l == 'E')
 candidates = {(y, x) for (y, line) in enumerate(lines) for (x, l) in enumerate(line) if l in ['S', 'a']}
-seen = set(candidates)
+seen = candidates.copy()
 i = 0
 while end not in candidates:
     candidates = {(ty, tx) for (y, x) in candidates for (ty, tx) in ((y-1, x), (y+1, x), (y, x-1), (y, x+1))

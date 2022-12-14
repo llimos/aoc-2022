@@ -1,11 +1,4 @@
 from aocd import lines, submit
-from math import inf
-
-# lines = """30373
-# 25512
-# 65332
-# 33549
-# 35390""".splitlines()
 
 lines = [[int(x) for x in y] for y in lines]
 # Make a matrix
