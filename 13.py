@@ -1,10 +1,12 @@
 from json import loads
-from typing import Any
+from typing import Union, Self
 from aocd import data, submit
 from functools import cmp_to_key
 
+Packet = list[Union[int, Self]]
 
-def inorder(left: Any, right: Any) -> int:
+
+def inorder(left: Union[Packet, int], right: Union[Packet, int]) -> int:
     return left - right if isinstance(left, int) and isinstance(right, int) \
         else inorder([left], right) if isinstance(left, int) \
         else inorder(left, [right]) if isinstance(right, int) \
